@@ -3,7 +3,7 @@
     <div class="container-fluid container-xl position-relative">
     <nav id="navmenu" class="navmenu">
         <ul>
-        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="index" class="active">Home</a></li>
         <li><a href="about.html">About</a></li>
         <li><a href="category.html">Category</a></li>
         <li><a href="product-details.html">Product Details</a></li>
