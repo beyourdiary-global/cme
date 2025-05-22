@@ -3,7 +3,7 @@ require_once 'config.php';
 
 // Check if user is already logged in via session
 if (isset($_SESSION['user_id'])) {
-    header("Location: dashboard.php");
+    header("Location: index");
     exit;
 }
 

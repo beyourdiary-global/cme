@@ -40,7 +40,7 @@
                 <p class="mb-0">Access account &amp; manage orders</p>
             </div>
             <div class="dropdown-body">
-                <a class="dropdown-item d-flex align-items-center" href="account.html">
+                <a class="dropdown-item d-flex align-items-center" href="account">
                 <i class="bi bi-person-circle me-2"></i>
                 <span>My Profile</span>
                 </a>
@@ -62,8 +62,8 @@
                 </a>
             </div>
             <div class="dropdown-footer">
-                <a href="login.html" class="btn btn-primary w-100 mb-2">Sign In</a>
-                <a href="register.html" class="btn btn-outline-primary w-100">Register</a>
+                <a href="login" class="btn btn-primary w-100 mb-2">Sign In</a>
+                <a href="register" class="btn btn-outline-primary w-100">Register</a>
             </div>
             </div>
         </div>
