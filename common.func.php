@@ -10,18 +10,45 @@
 /**
  * Starts a secure session with recommended settings.
  */
-function secureSessionStart() {
-    $sessionName = 'sec_session_id';
-    $secure = isset($_SERVER['HTTPS']); // Set to true if using https
-    $httponly = true;
+// function secureSessionStart() {
+//     $sessionName = 'sec_session_id';
+//     $secure = isset($_SERVER['HTTPS']); // Set to true if using https
+//     $httponly = true;
 
+//     // Forces sessions to only use cookies.
+//     if (ini_set('session.use_only_cookies', 1) === FALSE) {
+//         header("Location: error.php?err=Could not initiate a safe session (ini_set)");
+//         exit();
+//     }
+
+//     // Get current cookies params.
+//     $cookieParams = session_get_cookie_params();
+//     session_set_cookie_params([
+//         'lifetime' => $cookieParams["lifetime"],
+//         'path' => $cookieParams["path"],
+//         'domain' => $cookieParams["domain"],
+//         'secure' => $secure,
+//         'httponly' => $httponly,
+//         'samesite' => 'Lax' // or 'Strict' depending on your app requirements
+//     ]);
+
+//     session_name($sessionName);
+//     session_start();
+//     session_regenerate_id(true); // Regenerate session, delete old one.
+// }
+function secureSessionStart() {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return; // Session already started
+    }
+    $sessionName = 'sec_session_id';
+    $secure = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'; // Set true only if HTTPS is on
+    $httponly = true;
     // Forces sessions to only use cookies.
     if (ini_set('session.use_only_cookies', 1) === FALSE) {
         header("Location: error.php?err=Could not initiate a safe session (ini_set)");
         exit();
     }
-
-    // Get current cookies params.
+    // Get current cookie params.
     $cookieParams = session_get_cookie_params();
     session_set_cookie_params([
         'lifetime' => $cookieParams["lifetime"],
@@ -29,12 +56,11 @@ function secureSessionStart() {
         'domain' => $cookieParams["domain"],
         'secure' => $secure,
         'httponly' => $httponly,
-        'samesite' => 'Lax' // or 'Strict' depending on your app requirements
+        'samesite' => 'Lax' // or Strict depending on requirements
     ]);
-
     session_name($sessionName);
     session_start();
-    session_regenerate_id(true); // Regenerate session, delete old one.
+    session_regenerate_id(true); // Regenerate session ID to prevent fixation attacks
 }
 
 /**

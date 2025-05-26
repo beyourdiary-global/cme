@@ -27,7 +27,7 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
         // Update last_login
         $pdo->prepare("UPDATE users SET last_login = NOW() WHERE user_id = ?")->execute([$user['user_id']]);
 
-        header("Location: dashboard.php");
+        header("Location: index.php");
         exit;
     }
 }
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->prepare("UPDATE users SET remember_token = NULL WHERE user_id = ?")->execute([$user['user_id']]);
             }
 
-            header("Location: dashboard.php");
+            header("Location: index.php");
             exit;
         }
     }
@@ -118,6 +118,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <h2>Login</h2>
                 <p>Welcome back! Please enter your details</p>
               </div>
+
+              <?php if (isset($_SESSION['logout_message'])): ?>
+                <div class="alert alert-success" role="alert"><?= htmlspecialchars($_SESSION['logout_message']) ?></div>
+                <?php unset($_SESSION['logout_message']); // Clear the message after displaying ?>
+              <?php endif; ?>
 
               <?php if (!empty($error)): ?>
                 <div class="alert alert-danger" role="alert"><?= htmlspecialchars($error) ?></div>
@@ -165,4 +170,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </body>
 
 </html>
-

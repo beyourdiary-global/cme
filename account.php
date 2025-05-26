@@ -1,3 +1,9 @@
+<?php
+ob_start(); // Start output buffering
+require_once 'config.php';
+require_once 'common.func.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +20,6 @@
     <?php include_once 'include/navigation.php' ?>
     <?php include_once 'main/annoucementBar.php' ?>
     <?php include_once 'main/mobileSearchForm.php' ?>
-
   </header>
 
   <main class="main">
