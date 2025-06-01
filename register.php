@@ -238,6 +238,68 @@ function sendVerificationEmail($email, $firstName, $token) {
         });
       });
     });
+
+        // Place this after including common.js
+        document.addEventListener('DOMContentLoaded', function () {
+          const form = document.querySelector('form[action="register.php"]');
+          if (!form) return;
+          form.addEventListener('submit', function (e) {
+            // Remove previous error
+            let alertDiv = form.querySelector('.js-form-error');
+            if (alertDiv) alertDiv.remove();
+
+            // Get fields
+            const firstName = form.querySelector('input[name="firstName"]');
+            const lastName = form.querySelector('input[name="lastName"]');
+            const email = form.querySelector('input[name="email"]');
+            const password = form.querySelector('input[name="password"]');
+            const confirmPassword = form.querySelector('input[name="confirmPassword"]');
+            const terms = form.querySelector('input[name="terms"]');
+
+            let errorMsg = "";
+
+            // Password pattern: min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+            if (!firstName.value.trim()) {
+              errorMsg = "Please enter your first name.";
+              firstName.focus();
+            } else if (!lastName.value.trim()) {
+              errorMsg = "Please enter your last name.";
+              lastName.focus();
+            } else if (!email.value.trim()) {
+              errorMsg = "Please enter your email address.";
+              email.focus();
+            } else if (typeof isValidEmail === "function" && !isValidEmail(email.value.trim())) {
+              errorMsg = "Please enter a valid email address.";
+              email.focus();
+            } else if (!password.value) {
+              errorMsg = "Please enter your password.";
+              password.focus();
+            } else if (typeof isValidPassword === "function" && !isValidPassword(password.value)) {
+              errorMsg = "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.";
+              password.focus();
+            } else if (!confirmPassword.value) {
+              errorMsg = "Please confirm your password.";
+              confirmPassword.focus();
+            } else if (password.value !== confirmPassword.value) {
+              errorMsg = "Passwords do not match.";
+              confirmPassword.focus();
+            } else if (!terms.checked) {
+              errorMsg = "You must agree to the Terms of Service.";
+              terms.focus();
+            }
+
+            if (errorMsg) {
+              e.preventDefault();
+              alertDiv = document.createElement("div");
+              alertDiv.className = "alert alert-danger js-form-error";
+              alertDiv.setAttribute("role", "alert");
+              alertDiv.textContent = errorMsg;
+              form.insertBefore(alertDiv, form.firstChild);
+            }
+          });
+        });
     </script>
 
 </body>

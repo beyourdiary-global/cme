@@ -23,6 +23,8 @@
 
 <!-- Main CSS File -->
 <link href="assets/css/main.css" rel="stylesheet">
+   
+<script src="assets/js/common.js"></script>
 
 <!-- =======================================================
 * Template Name: FashionStore

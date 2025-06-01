@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="mb-3">
                   <div class="d-flex justify-content-between">
                     <label for="password" class="form-label">Password</label>
-                    <a href="#" class="forgot-link" tabindex="0" aria-label="Forgot password?">Forgot password?</a>
+                    <a href="forgot-password.php" class="forgot-link" tabindex="0" aria-label="Forgot password?">Forgot password?</a>
                   </div>
                   <input type="password" class="form-control" id="password" name="password" aria-label="Password" required autocomplete="current-password">
                 </div>
@@ -167,6 +167,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <?php include_once 'include/footer.php' ?>
   <?php include_once 'include/globalFooterScript.php' ?>
+  <script src="assets/js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.querySelector('form[method="POST"]');
+      if (!form) return;
+      form.addEventListener('submit', function (e) {
+        const emailInput = form.querySelector('input[name="email"]');
+        const passwordInput = form.querySelector('input[name="password"]');
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        let errorMsg = "";
+
+        // Remove any previous error
+        let alertDiv = form.querySelector(".js-form-error");
+        if (alertDiv) alertDiv.remove();
+
+        if (!email) {
+          errorMsg = "Please enter your email address.";
+          emailInput.focus();
+        } else if (!isValidEmail(email)) {
+          errorMsg = "Please enter a valid email address.";
+          emailInput.focus();
+        } else if (!password) {
+          errorMsg = "Please enter your password.";
+          passwordInput.focus();
+        }
+
+        if (errorMsg) {
+          e.preventDefault();
+          alertDiv = document.createElement("div");
+          alertDiv.className = "alert alert-danger js-form-error";
+          alertDiv.setAttribute("role", "alert");
+          alertDiv.textContent = errorMsg;
+          form.insertBefore(alertDiv, form.firstChild);
+        }
+      });
+    });
+  </script>
+  </body>
+  </html>
 </body>
 
 </html>
