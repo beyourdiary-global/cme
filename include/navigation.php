@@ -3,12 +3,12 @@
     <div class="container-fluid container-xl position-relative">
     <nav id="navmenu" class="navmenu">
         <ul>
-        <li><a href="index" class="active">Home</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="category.html">Category</a></li>
-        <li><a href="product-details.html">Product Details</a></li>
-        <li><a href="cart.html">Cart</a></li>
-        <li><a href="checkout.html">Checkout</a></li>
+        <li><a href="index.php" class="active">Home</a></li>
+        <li><a href="about.php">About</a></li>
+        <li><a href="category.php">Category</a></li>
+        <li><a href="product-details.php">Product Details</a></li>
+        <li><a href="cart.php">Cart</a></li>
+        <li><a href="checkout.php">Checkout</a></li>
         <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
             <li><a href="#">Dropdown 1</a></li>
@@ -583,7 +583,7 @@
 
         </li><!-- End Products Mega Menu 2 -->
 
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="contact.php">Contact</a></li>
 
         </ul>
     </nav>

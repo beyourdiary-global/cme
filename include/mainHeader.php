@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="d-flex py-3 align-items-center justify-content-between">
 
             <!-- Logo -->
-            <a href="index" class="logo d-flex align-items-center">
+            <a href="index.php" class="logo d-flex align-items-center">
                 <!-- Uncomment the line below if you also wish to use an image logo -->
                 <!-- <img src="assets/img/logo.webp" alt=""> -->
                 <h1 class="sitename">Fashion<span>Store</span></h1>
@@ -45,23 +45,23 @@ if (session_status() === PHP_SESSION_NONE) {
                             <p class="mb-0">Access account &amp; manage orders</p>
                         </div>
                         <div class="dropdown-body">
-                            <a class="dropdown-item d-flex align-items-center" href="account">
+                            <a class="dropdown-item d-flex align-items-center" href="account.php">
                                 <i class="bi bi-person-circle me-2"></i>
                                 <span>My Profile</span>
                             </a>
-                            <a class="dropdown-item d-flex align-items-center" href="orders.html">
+                            <a class="dropdown-item d-flex align-items-center" href="orders.php">
                                 <i class="bi bi-bag-check me-2"></i>
                                 <span>My Orders</span>
                             </a>
-                            <a class="dropdown-item d-flex align-items-center" href="wishlist.html">
+                            <a class="dropdown-item d-flex align-items-center" href="wishlist.php">
                                 <i class="bi bi-heart me-2"></i>
                                 <span>My Wishlist</span>
                             </a>
-                            <a class="dropdown-item d-flex align-items-center" href="returns.html">
+                            <a class="dropdown-item d-flex align-items-center" href="returns.php">
                                 <i class="bi bi-arrow-return-left me-2"></i>
                                 <span>Returns &amp; Refunds</span>
                             </a>
-                            <a class="dropdown-item d-flex align-items-center" href="settings.html">
+                            <a class="dropdown-item d-flex align-items-center" href="settings.php">
                                 <i class="bi bi-gear me-2"></i>
                                 <span>Settings</span>
                             </a>
@@ -70,15 +70,15 @@ if (session_status() === PHP_SESSION_NONE) {
                             <?php if (isset($_SESSION['user_id'])): ?>
                                 <a href="logout.php" class="btn btn-outline-danger w-100">Logout</a>
                             <?php else: ?>
-                                <a href="login" class="btn btn-primary w-100 mb-2">Sign In</a>
-                                <a href="register" class="btn btn-outline-primary w-100">Register</a>
+                                <a href="login.php" class="btn btn-primary w-100 mb-2">Sign In</a>
+                                <a href="register.php" class="btn btn-outline-primary w-100">Register</a>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
 
                 <!-- Wishlist -->
-                <a href="wishlist.html" class="header-action-btn d-none d-md-flex">
+                <a href="wishlist.php" class="header-action-btn d-none d-md-flex">
                     <i class="bi bi-heart"></i>
                     <span class="action-text d-none d-md-inline-block">Wishlist</span>
                     <span class="badge">0</span>
@@ -146,8 +146,8 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <span class="cart-total-price">$279.97</span>
                             </div>
                             <div class="cart-actions">
-                                <a href="cart.html" class="btn btn-outline-primary">View Cart</a>
-                                <a href="checkout.html" class="btn btn-primary">Checkout</a>
+                                <a href="cart.php" class="btn btn-outline-primary">View Cart</a>
+                                <a href="checkout.php" class="btn btn-primary">Checkout</a>
                             </div>
                         </div>
                     </div>
