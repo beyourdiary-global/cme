@@ -1,14 +1,32 @@
 <?php
-// Start output buffering at the very beginning
-ob_start();
+// Fix the config path for AJAX loading
+$config_paths = [
+    dirname(dirname(dirname(__FILE__))) . '/config.php',
+    '../config.php',
+    '../../config.php'
+];
 
-require_once 'config.php';
-require_once 'common.func.php';
+$config_loaded = false;
+foreach ($config_paths as $config_path) {
+    if (file_exists($config_path)) {
+        require_once $config_path;
+        $config_loaded = true;
+        break;
+    }
+}
 
-secureSessionStart();
+if (!$config_loaded) {
+    echo '<div class="alert alert-danger">Configuration file not found.</div>';
+    exit;
+}
+
+// Only start session and check auth if not already done
+if (session_status() === PHP_SESSION_NONE) {
+    secureSessionStart();
+}
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php'); // Redirect to your login page URL
+    echo '<div class="alert alert-warning">Please log in to view this content.</div>';
     exit;
 }
 
@@ -105,7 +123,7 @@ $csrf_token = generateCsrfToken();
         </div>
 
         <div class="text-end">
-            <button type="submit" class="btn btn-save">Save Changes</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
     </form>
 </div>
