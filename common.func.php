@@ -165,5 +165,41 @@ function clearRememberMeToken(PDO $pdo, int $userId): void {
 function displayError(?string $error): string {
     return $error ? htmlspecialchars($error) : '';
 }
+
+/**
+ * Check if current user is an admin
+ *
+ * @return bool
+ */
+function isAdmin(): bool {
+    return isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin';
+}
+
+/**
+ * Require admin access or redirect
+ *
+ * @param string $redirectUrl Where to redirect non-admin users
+ */
+function requireAdmin(string $redirectUrl = '../index.php'): void {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login.php");
+        exit;
+    }
+    
+    if ($_SESSION['role'] !== 'admin') {
+        header("Location: $redirectUrl?error=access_denied");
+        exit;
+    }
+}
+
+/**
+ * Check if user has specific role
+ *
+ * @param string $role
+ * @return bool
+ */
+function hasRole(string $role): bool {
+    return isset($_SESSION['role']) && $_SESSION['role'] === $role;
+}
 ?>
 
