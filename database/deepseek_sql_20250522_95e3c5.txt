@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Addresses Table
-CREATE TABLE Addresses (
+CREATE TABLE addresses (
     address_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     address_type ENUM('shipping', 'billing') NOT NULL,
@@ -31,12 +31,12 @@ CREATE TABLE Addresses (
     postal_code VARCHAR(20) NOT NULL,
     country VARCHAR(50) NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Payment Methods Table
-CREATE TABLE PaymentMethods (
+CREATE TABLE paymentMethods (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     card_number VARCHAR(255) NOT NULL,  -- Encrypted value
@@ -46,13 +46,13 @@ CREATE TABLE PaymentMethods (
     cvv VARCHAR(255) NOT NULL,  -- Encrypted value
     billing_address_id INT NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (billing_address_id) REFERENCES Addresses(address_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (billing_address_id) REFERENCES addresses(address_id),
     INDEX (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Orders Table
-CREATE TABLE Orders (
+CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -60,30 +60,30 @@ CREATE TABLE Orders (
     status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
     shipping_address_id INT NOT NULL,
     payment_method_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (shipping_address_id) REFERENCES Addresses(address_id),
-    FOREIGN KEY (payment_method_id) REFERENCES PaymentMethods(payment_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (shipping_address_id) REFERENCES addresses(address_id),
+    FOREIGN KEY (payment_method_id) REFERENCES paymentMethods(payment_id),
     INDEX (user_id),
     INDEX (order_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Order Items Table
-CREATE TABLE OrderItems (
+CREATE TABLE orderItems (
     order_item_id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
     product_id INT NOT NULL,  -- Assuming you have a Products table
     quantity INT NOT NULL CHECK (quantity > 0),
     price_at_purchase DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
     INDEX (order_id),
     INDEX (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Password Resets Table
-CREATE TABLE PasswordResets (
+CREATE TABLE passwordResets (
     reset_token VARCHAR(255) PRIMARY KEY,
     user_id INT NOT NULL,
     expires_at DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     INDEX (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
