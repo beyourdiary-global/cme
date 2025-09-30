@@ -1,4 +1,7 @@
 <?php
+// Start output buffering at the very beginning
+ob_start();
+
 require_once 'config.php';
 require_once 'common.func.php';
 
@@ -10,69 +13,14 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
-$errors = [];
-$successMessage = '';
-
-// Process form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Validate CSRF token
-    $csrfToken = $_POST['csrf_token'] ?? '';
-    if (!validateCsrfToken($csrfToken)) {
-        $errors[] = "Invalid CSRF token.";
-    } else {
-        // Sanitize inputs
-        $firstName = sanitizeInput($_POST['firstName'] ?? '');
-        $lastName = sanitizeInput($_POST['lastName'] ?? '');
-        $email = sanitizeEmail($_POST['email'] ?? '');
-        $phoneRaw = $_POST['phone'] ?? '';
-        $phone = preg_replace('/[^\d+]/', '', $phoneRaw); // Clean phone input
-        $birthdate = sanitizeInput($_POST['birthdate'] ?? '');
-        $gender = sanitizeInput($_POST['gender'] ?? '');
-
-        // Basic validation
-        if (!$firstName) {
-            $errors[] = "First name is required.";
-        }
-        if (!$lastName) {
-            $errors[] = "Last name is required.";
-        }
-        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Valid email is required.";
-        }
-
-        // Validate phone: only digits and leading + allowed
-        if ($phone !== '' && !preg_match('/^\+?[0-9]+$/', $phone)) {
-            $errors[] = "Phone number must contain only numbers and optionally start with +.";
-        }
-
-        if (empty($errors)) {
-            try {
-                // Check if email is taken by other users
-                $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
-                $stmt->execute([$email, $userId]);
-                if ($stmt->fetch()) {
-                    $errors[] = "Email is already registered by another user.";
-                } else {
-                    // Update user info
-                    $stmt = $pdo->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, phone = ?, updated_at = NOW() WHERE user_id = ?");
-                    $stmt->execute([$firstName, $lastName, $email, $phone, $userId]);
-
-                    $successMessage = "Your information has been updated. Thank you!";
-                }
-            } catch (Exception $e) {
-                $errors[] = "Database error: " . htmlspecialchars($e->getMessage());
-            }
-        }
-    }
-}
 
 // Fetch current user info to prefill the form
 try {
-    $stmt = $pdo->prepare("SELECT first_name, last_name, email, phone FROM users WHERE user_id = ?");
+    $stmt = $pdo->prepare("SELECT first_name, last_name, email, phone, birthdate, gender FROM users WHERE user_id = ?");
     $stmt->execute([$userId]);
     $user = $stmt->fetch();
     if (!$user) {
-        echo "User  not found.";
+        echo "User not found.";
         exit;
     }
 
@@ -91,20 +39,7 @@ $csrf_token = generateCsrfToken();
 </div>
 
 <div class="personal-info-form" data-aos="fade-up" data-aos-delay="100">
-    <?php if ($errors): ?>
-        <div class="error-message text-danger">
-            <ul>
-                <?php foreach ($errors as $error) : ?>
-                    <li><?php echo htmlspecialchars($error); ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php else: ?>
-        <div class="error-message text-danger"></div> <!-- empty error container for JS -->
-    <?php endif; ?>
-    <?php if ($successMessage): ?>
-        <div class="sent-message text-success"><?php echo htmlspecialchars($successMessage); ?></div>
-    <?php endif; ?>
+    <div class="error-message text-danger"></div> <!-- empty error container for JS -->
 
     <form id="personalInfoForm" method="POST" action="">
         <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>" />
@@ -113,13 +48,13 @@ $csrf_token = generateCsrfToken();
             <div class="col-md-6 mb-3">
                 <label for="firstName" class="form-label">First Name</label>
                 <input type="text" class="form-control" id="firstName" name="firstName"
-                    value="<?php echo htmlspecialchars($_POST['firstName'] ?? $user['first_name']); ?>" required>
+                    value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
             </div>
 
             <div class="col-md-6 mb-3">
                 <label for="lastName" class="form-label">Last Name</label>
                 <input type="text" class="form-control" id="lastName" name="lastName"
-                    value="<?php echo htmlspecialchars($_POST['lastName'] ?? $user['last_name']); ?>" required>
+                    value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
             </div>
         </div>
 
@@ -127,7 +62,7 @@ $csrf_token = generateCsrfToken();
             <div class="col-md-6 mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email"
-                    value="<?php echo htmlspecialchars($_POST['email'] ?? $user['email']); ?>" required>
+                    value="<?php echo htmlspecialchars($user['email']); ?>" required>
             </div>
 
             <div class="col-md-6 mb-3">
@@ -142,29 +77,29 @@ $csrf_token = generateCsrfToken();
         <div class="mb-3">
             <label for="birthdate" class="form-label">Date of Birth</label>
             <input type="date" class="form-control" id="birthdate" name="birthdate"
-                value="<?php echo htmlspecialchars($_POST['birthdate'] ?? ''); ?>">
+                value="<?php echo htmlspecialchars($user['birthdate']); ?>">
         </div>
 
         <div class="mb-3">
             <label class="form-label d-block">Gender</label>
             <?php
-            $genderVal = $_POST['gender'] ?? '';
+            $genderVal = $user['gender'] ?? '';
             ?>
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" id="genderMale" value="male"
-                    <?php echo ($genderVal === 'male') ? 'checked' : ''; ?>>
+                <input class="form-check-input" type="radio" name="gender" id="genderMale" value="m"
+                    <?php echo ($genderVal === 'm') ? 'checked' : ''; ?>>
                 <label class="form-check-label" for="genderMale">Male</label>
             </div>
 
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="female"
-                    <?php echo ($genderVal === 'female') ? 'checked' : ''; ?>>
+                <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="f"
+                    <?php echo ($genderVal === 'f') ? 'checked' : ''; ?>>
                 <label class="form-check-label" for="genderFemale">Female</label>
             </div>
 
             <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" id="genderOther" value="other"
-                    <?php echo ($genderVal === 'other') ? 'checked' : ''; ?>>
+                <input class="form-check-input" type="radio" name="gender" id="genderOther" value="o"
+                    <?php echo ($genderVal === 'o') ? 'checked' : ''; ?>>
                 <label class="form-check-label" for="genderOther">Other</label>
             </div>
         </div>
@@ -175,19 +110,142 @@ $csrf_token = generateCsrfToken();
     </form>
 </div>
 
+<!-- Bootstrap Toast Container -->
+<div class="toast-container position-fixed top-50 start-50 translate-middle p-3" style="z-index: 11;">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <div id="toastIcon" class="me-2"></div>
+            <strong id="toastTitle" class="me-auto">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            <!-- Message will be inserted here -->
+        </div>
+    </div>
+</div>
+
 <script>
+// Function to show Bootstrap Toast
+function showToast(message, type = 'success') {
+    const toastElement = document.getElementById('notificationToast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastHeader = toastElement.querySelector('.toast-header');
+    
+    // Check if Bootstrap is available
+    if (typeof bootstrap === 'undefined') {
+        // Fallback to simple alert if Bootstrap is not available
+        alert(type.toUpperCase() + ': ' + message.replace(/<[^>]*>/g, ''));
+        return;
+    }
+    
+    // Hide any existing toast first
+    const existingToast = bootstrap.Toast.getInstance(toastElement);
+    if (existingToast) {
+        existingToast.hide();
+    }
+    
+    // Set icon and styling based on type
+    if (type === 'success') {
+        toastTitle.textContent = 'Success!';
+        toastHeader.className = 'toast-header bg-success text-white';
+        toastIcon.innerHTML = '<i class="fas fa-check-circle text-white"></i>';
+    } else {
+        toastTitle.textContent = 'Error!';
+        toastHeader.className = 'toast-header bg-danger text-white';
+        toastIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-white"></i>';
+    }
+    
+    // Set message
+    toastMessage.innerHTML = message;
+    
+    // Show toast - both success and error auto-hide
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true, // Auto-hide both success and error
+        delay: type === 'success' ? 3000 : 8000 // Success: 3s, Error: 8s
+    });
+    
+    toast.show();
+}
+
 document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent default form submission
+    
+    const form = this;
+    const formData = new FormData(form);
+    const errorElem = document.querySelector('.error-message');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Clear previous messages
+    errorElem.innerHTML = '';
+    
+    // Disable submit button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Saving...';
+    
+    // Client-side phone validation
     const phoneInput = document.getElementById('phone');
     const phone = phoneInput.value.trim();
     const phonePattern = /^\+?[0-9]+$/;
-    const errorElem = document.querySelector('.error-message');
-    errorElem.textContent = ''; // clear previous error
-
+    
     if (phone !== '' && !phonePattern.test(phone)) {
-        e.preventDefault();
-        errorElem.textContent = 'Phone number must contain only numbers and optionally start with +.';
+        showToast('Phone number must contain only numbers and optionally start with +.', 'error');
         phoneInput.focus();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Changes';
         return false;
     }
+    
+    // Use absolute URL to the AJAX file
+    const ajaxUrl = '/cme/profile/subTab/personalInfoAjax.php';
+    
+    console.log('AJAX URL:', ajaxUrl); // Debug log
+    
+    // Submit form via AJAX
+    fetch(ajaxUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers.get('content-type'));
+        
+        return response.text(); // Get as text first to debug
+    })
+    .then(text => {
+        console.log('Raw response:', text);
+        
+        try {
+            const data = JSON.parse(text);
+            console.log('Parsed data:', data);
+            
+            if (data.success) {
+                showToast(data.message, 'success');
+            } else {
+                if (data.errors && data.errors.length > 0) {
+                    const errorList = data.errors.map(error => `<li>${error}</li>`).join('');
+                    showToast(`<ul class="mb-0">${errorList}</ul>`, 'error');
+                } else {
+                    showToast('An unknown error occurred.', 'error');
+                }
+            }
+        } catch (e) {
+            console.error('JSON parse error:', e);
+            showToast('Server error: ' + text.substring(0, 200), 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        showToast('Network error: ' + error.message, 'error');
+    })
+    .finally(() => {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Save Changes';
+    });
 });
 </script>

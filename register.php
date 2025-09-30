@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php'; // Includes DB connection and common functions
+require_once 'vendor/autoload.php'; // Add this line after require_once 'config.php';
 
 $errors = [];
 $message = '';
@@ -76,9 +77,22 @@ function sendVerificationEmail($email, $firstName, $token) {
     $verifyLink = "http://localhost/cme/verify.php?token=$token";
     $subject = "Verify Your Email Address";
     $body = "Hi $firstName,\n\nPlease verify your account by clicking the link below:\n$verifyLink\n\nThis link expires in 24 hours.\n\nThanks!";
-    $headers = "From: no-reply@yourdomain.com";
 
-    return mail($email, $subject, $body, $headers);
+    $mail = new PHPMailer\PHPMailer\PHPMailer();
+    $mail->isSMTP();
+    $mail->Host = 'smtp.gmail.com'; // Use your SMTP server
+    $mail->SMTPAuth = true;
+    $mail->Username = 'your_email@gmail.com'; // Your SMTP username
+    $mail->Password = 'your_email_password'; // Your SMTP password or app password
+    $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+    $mail->Port = 587;
+
+    $mail->setFrom('no-reply@yourdomain.com', 'Your Site Name');
+    $mail->addAddress($email, $firstName);
+    $mail->Subject = $subject;
+    $mail->Body = $body;
+
+    return $mail->send();
 }
 ?>
 
