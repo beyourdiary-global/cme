@@ -19,7 +19,7 @@
         <div class="col-lg-6">
         <div class="d-flex justify-content-end">
             <div class="top-bar-item me-4">
-            <a href="track-order.html">
+            <a href="track-order.php">
                 <i class="bi bi-truck me-2"></i>Track Order
             </a>
             </div>

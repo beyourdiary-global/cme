@@ -1,6 +1,10 @@
+<?php
+// Don't start session here if config.php already handles it
+// require_once 'config.php'; // Remove this if it's here
+?>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Index - FashionStore Bootstrap Template</title>
+<title>CME - Fashion Store</title>
 <meta name="description" content="">
 <meta name="keywords" content="">
 

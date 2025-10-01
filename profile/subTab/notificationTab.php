@@ -1,3 +1,28 @@
+<?php
+// Fix config path for AJAX loading
+$config_paths = [
+    dirname(dirname(dirname(__FILE__))) . '/config.php',
+    '../config.php',
+    '../../config.php'
+];
+
+foreach ($config_paths as $config_path) {
+    if (file_exists($config_path)) {
+        require_once $config_path;
+        break;
+    }
+}
+
+if (session_status() === PHP_SESSION_NONE) {
+    secureSessionStart();
+}
+
+if (!isset($_SESSION['user_id'])) {
+    echo '<div class="alert alert-warning">Please log in to view this content.</div>';
+    exit;
+}
+?>
+
 <div class="tab-header">
     <h2>Notification Settings</h2>
 </div>
@@ -88,3 +113,31 @@
     <button type="button" class="btn btn-save">Save Preferences</button>
     </div>
 </div>
+
+<script>
+// Add functionality for the notification settings
+document.addEventListener('DOMContentLoaded', function() {
+    const saveBtn = document.querySelector('.btn-save');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+            // Collect all notification preferences
+            const preferences = {};
+            const checkboxes = document.querySelectorAll('.notifications-settings input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                preferences[checkbox.id] = checkbox.checked;
+            });
+            
+            console.log('Saving preferences:', preferences);
+            
+            // Here you would send the preferences to your backend
+            // For now, just show a success message
+            if (typeof showToast === 'function') {
+                showToast('Notification preferences saved successfully!', 'success');
+            } else {
+                alert('Notification preferences saved successfully!');
+            }
+        });
+    }
+});
+</script>
