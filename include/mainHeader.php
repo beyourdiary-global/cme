@@ -61,6 +61,12 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <i class="bi bi-arrow-return-left me-2"></i>
                                 <span>Returns &amp; Refunds</span>
                             </a>
+                            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                                <a class="dropdown-item d-flex align-items-center" href="cms/">
+                                    <i class="bi bi-grid-3x3-gap me-2"></i>
+                                    <span>Log to CMS</span>
+                                </a>
+                            <?php endif; ?>
                             <a class="dropdown-item d-flex align-items-center" href="settings.php">
                                 <i class="bi bi-gear me-2"></i>
                                 <span>Settings</span>
